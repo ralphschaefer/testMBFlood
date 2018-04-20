@@ -2,8 +2,9 @@ package org.mbFlood.module1
 
 
 import akka.actor.{ActorRef, ActorSystem, CoordinatedShutdown, Props}
+import akka.routing.FromConfig
 import com.typesafe.config.Config
-import org.mbFlood.module1.actors.SpreadMessage
+import org.mbFlood.module1.actors.{ConsumeMessage, SpreadMessage}
 import org.mbFlood.actors.Shutdown
 
 trait Node {
@@ -11,6 +12,7 @@ trait Node {
   val config : Config
   val spreadActor: ActorRef
   val shutdownActor: ActorRef
+  val consumerActor: ActorRef
   def shutdown():Unit = {
     CoordinatedShutdown.get(system).run(CoordinatedShutdown.unknownReason)
     System.exit(0)
@@ -26,8 +28,10 @@ object Node {
 
   def apply(actorSystemName: String): Node = new Node {
     val system: ActorSystem = ActorSystem(actorSystemName)
-    val spreadActor: ActorRef = system.actorOf(SpreadMessage.props,"spreadActor")
+    val consumerActor: ActorRef = system.actorOf(ConsumeMessage.props.withMailbox("bounded-mailbox"),
+      "consumeActor")
     val shutdownActor: ActorRef = system.actorOf(Props(new ShutdownActor(shutdown)),Shutdown.path)
+    val spreadActor: ActorRef = system.actorOf(SpreadMessage.props,"spreadActor")
     lazy val config = system.settings.config
   }
 }
