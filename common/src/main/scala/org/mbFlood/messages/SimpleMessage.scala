@@ -1,3 +1,7 @@
 package org.mbFlood.messages
 
-case class SimpleMessage (message: String)
+import akka.actor.ActorRef
+
+case class SimpleMessage (message: String, spreadOrigin: ActorRef, messageRef:Int) {
+  override def toString: String = s"MSG($message)"
+}

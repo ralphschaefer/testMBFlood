@@ -2,7 +2,6 @@ package org.mbFlood.module1
 
 
 import akka.actor.{ActorRef, ActorSystem, CoordinatedShutdown, Props}
-import akka.routing.FromConfig
 import com.typesafe.config.Config
 import org.mbFlood.module1.actors.{ConsumeMessage, SpreadMessage}
 import org.mbFlood.actors.Shutdown
